@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>pinqloq · Go Lab</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">pinqloq<span class="brand-dot">.</span></a>
+    <span class="divider"></span>
+    <span class="lab-label">
+      <svg class="gopher-mark" width="20" height="16" viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <ellipse cx="20" cy="18" rx="18" ry="13" fill="#00acd7" />
+        <circle cx="9" cy="7" r="6" fill="#00acd7" />
+        <circle cx="31" cy="7" r="6" fill="#00acd7" />
+        <circle cx="9" cy="8" r="3.4" fill="#ffffff" />
+        <circle cx="31" cy="8" r="3.4" fill="#ffffff" />
+        <circle cx="9" cy="8" r="1.4" fill="#1c1c1a" />
+        <circle cx="31" cy="8" r="1.4" fill="#1c1c1a" />
+      </svg>
+      GO LAB
+    </span>
+    <span class="connection connection-off" id="connection">Not integrated</span>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="intro-copy">
+        <div class="eyebrow">SDK TEST LAB <span>· 01 / NET/HTTP</span></div>
+        <h1>Send a request.<br /><span>Trace the log.</span></h1>
+        <p>
+          A real SDK and real delivery. Test HTTP events, manual logs, and redaction from the
+          pinqloq Go SDK, wired into a plain <code>net/http</code> server.
+        </p>
+      </div>
+      <div class="flow" aria-hidden="true">
+        <span>APPLICATION</span>
+        <b>Logger.Enqueue</b>
+        <i>↓</i>
+        <span>IN-MEMORY QUEUE</span>
+        <b>200 entries <em>or</em> 2 seconds</b>
+        <i>↓</i>
+        <span>INGEST API</span>
+        <b>logs: [ … ] <em>→ RabbitMQ → Panel</em></b>
+      </div>
+    </section>
+
+    <div class="config-strip">
+      <span><i class="dot dot-off"></i> pinqloq SDK integration is a follow-up step</span>
+      <span>HTTP <b>—</b></span>
+      <span>MANUAL <b>—</b></span>
+    </div>
+
+    <div class="workspace">
+      <section class="scenarios">
+        <div class="section-heading">
+          <h2>Scenarios</h2>
+          <span>Synthetic data only</span>
+        </div>
+
+        <article class="card">
+          <div class="card-number">01</div>
+          <h3>HTTP request</h3>
+          <p>Choose a response status and let the middleware capture the request automatically.</p>
+          <div class="status-buttons" id="status-buttons">
+            <button data-status="200" class="success">200 <small>OK</small></button>
+            <button data-status="400">400 <small>Bad request</small></button>
+            <button data-status="401">401 <small>Unauthorized</small></button>
+            <button data-status="404">404 <small>Not found</small></button>
+            <button data-status="500" class="error">500 <small>Server error</small></button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-number">02</div>
+          <h3>Manual event</h3>
+          <p>Create a backend event and watch it move through the queue and delivery pipeline.</p>
+          <div class="manual-row">
+            <label class="sr-only" for="level">Log level</label>
+            <select id="level">
+              <option value="debug">Debug</option>
+              <option value="information" selected>Information</option>
+              <option value="warning">Warning</option>
+              <option value="error">Error</option>
+              <option value="fatal">Fatal</option>
+            </select>
+            <button id="manual" class="primary" disabled>Send event <span>↗</span></button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-number">03</div>
+          <h3>Sensitive data redaction</h3>
+          <p>Test with synthetic <code>password</code> and <code>taxNumber</code> fields, then inspect the result in the log panel.</p>
+          <div class="redaction-buttons">
+            <button data-redaction="fields" disabled>Redact fields</button>
+            <button data-redaction="endpoint" disabled>Redact entire endpoint</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="results">
+        <div class="section-heading">
+          <h2>Last response</h2>
+          <span id="run-state" class="status-pill">READY</span>
+        </div>
+        <div class="results-body">
+          <pre id="output">Choose a scenario to begin.</pre>
+        </div>
+        <p class="panel-note"><span>↗</span> API acceptance does not guarantee panel visibility. Batches send every ~2s — allow a short delay, then verify in the <a href="https://pinqloq-panel.pinqponq.io" target="_blank" rel="noreferrer">log panel</a>.</p>
+
+        <div class="history">
+          <h3>Recent tests</h3>
+          <div id="history"><span class="empty-history">No tests in this session yet.</span></div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <span>pinqloq / developer samples</span>
+      <span>net/http · Go 1.22+</span>
+    </footer>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
