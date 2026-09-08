@@ -62,3 +62,40 @@ func TestServesTestLabPage(t *testing.T) {
 		t.Fatalf("expected page to mention pinqloq")
 	}
 }
+
+func TestConfigReportsWhetherPinqloqIsConfigured(t *testing.T) {
+	mux := newMux("public")
+
+	req := httptest.NewRequest(http.MethodGet, "/api/config", nil)
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+
+	var body map[string]any
+	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+		t.Fatalf("invalid JSON body: %v", err)
+	}
+
+	if _, ok := body["configured"]; !ok {
+		t.Fatalf("expected a 'configured' field in the response")
+	}
+}
+
+func TestManualEventRejectedWhenPinqloqNotConfigured(t *testing.T) {
+	if pinqloqClient != nil {
+		t.Skip("pinqloq is configured in this environment")
+	}
+
+	mux := newMux("public")
+
+	req := httptest.NewRequest(http.MethodPost, "/demo/manual/information", nil)
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusServiceUnavailable {
+		t.Fatalf("expected 503, got %d", rec.Code)
+	}
+}

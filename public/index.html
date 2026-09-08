@@ -23,7 +23,7 @@
       </svg>
       GO LAB
     </span>
-    <span class="connection connection-off" id="connection">Not integrated</span>
+    <span class="connection" id="connection">Checking…</span>
   </header>
 
   <main>
@@ -49,9 +49,9 @@
     </section>
 
     <div class="config-strip">
-      <span><i class="dot dot-off"></i> pinqloq SDK integration is a follow-up step</span>
-      <span>HTTP <b>—</b></span>
-      <span>MANUAL <b>—</b></span>
+      <span><i class="dot" id="config-dot"></i> <span id="config-state">Checking configuration…</span></span>
+      <span>HTTP <b id="http-collection">—</b></span>
+      <span>MANUAL <b id="manual-collection">—</b></span>
     </div>
 
     <div class="workspace">
@@ -87,7 +87,7 @@
               <option value="error">Error</option>
               <option value="fatal">Fatal</option>
             </select>
-            <button id="manual" class="primary" disabled>Send event <span>↗</span></button>
+            <button id="manual" class="primary">Send event <span>↗</span></button>
           </div>
         </article>
 
@@ -96,8 +96,8 @@
           <h3>Sensitive data redaction</h3>
           <p>Test with synthetic <code>password</code> and <code>taxNumber</code> fields, then inspect the result in the log panel.</p>
           <div class="redaction-buttons">
-            <button data-redaction="fields" disabled>Redact fields</button>
-            <button data-redaction="endpoint" disabled>Redact entire endpoint</button>
+            <button data-redaction="fields">Redact fields</button>
+            <button data-redaction="endpoint">Redact entire endpoint</button>
           </div>
         </article>
       </section>

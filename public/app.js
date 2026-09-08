@@ -1,5 +1,10 @@
 const output = document.getElementById("output");
 const runState = document.getElementById("run-state");
+const connection = document.getElementById("connection");
+const configDot = document.getElementById("config-dot");
+const configState = document.getElementById("config-state");
+const httpCollection = document.getElementById("http-collection");
+const manualCollection = document.getElementById("manual-collection");
 const historyList = document.getElementById("history");
 
 const history = [];
@@ -36,6 +41,18 @@ function renderHistory() {
   });
 }
 
+async function loadConfig() {
+  const response = await fetch("/api/config");
+  const config = await response.json();
+
+  connection.textContent = config.configured ? "Connected" : "Not configured";
+  connection.classList.toggle("connection-off", !config.configured);
+  configDot.classList.toggle("dot-off", !config.configured);
+  configState.textContent = config.configured ? "Configured on the server" : "Set PINQLOQ_SECRET_KEY to enable delivery";
+  httpCollection.textContent = config.httpCollection || "—";
+  manualCollection.textContent = config.manualCollection || "—";
+}
+
 async function report(label, promise, trigger) {
   if (trigger) trigger.disabled = true;
   runState.textContent = "SENDING…";
@@ -69,3 +86,30 @@ document.querySelectorAll("#status-buttons button").forEach(button => {
     report(`HTTP ${button.dataset.status}`, fetch(`/demo/http/${button.dataset.status}`), button);
   });
 });
+
+document.getElementById("manual").addEventListener("click", event => {
+  const level = document.getElementById("level").value;
+  report(`Manual · ${level}`, fetch(`/demo/manual/${level}`, { method: "POST" }), event.currentTarget);
+});
+
+document.querySelectorAll(".redaction-buttons button").forEach(button => {
+  button.addEventListener("click", () => {
+    const isEndpoint = button.dataset.redaction === "endpoint";
+    const path = isEndpoint ? "/demo/redaction/endpoint" : "/demo/redaction/fields";
+
+    report(
+      isEndpoint ? "Redact · endpoint" : "Redact · fields",
+      fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password: "synthetic-pass-1234",
+          taxNumber: "TX-99-12345"
+        })
+      }),
+      button
+    );
+  });
+});
+
+loadConfig();

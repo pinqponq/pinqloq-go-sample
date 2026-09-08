@@ -1,10 +1,60 @@
 # pinqloq Go Sample
 
-A plain `net/http` sample application that will demonstrate how to integrate the `pinqloq` Go SDK into a backend service.
+A plain `net/http` sample application demonstrating how to integrate the `pinqloq` Go SDK into a backend service.
+
+It includes a browser-based test lab for automatic HTTP logging, manual structured events, and redaction. The application generates synthetic data only. Your Pinqloq secret key stays on the server and is never exposed to browser code.
 
 ## Requirements
 
 - Go 1.22 or later
+- A Pinqloq account
+- A Pinqloq project and secret key
+- One collection for automatic HTTP logs
+- One collection for manual events
+
+## Dashboard setup
+
+1. Sign in to the [Pinqloq dashboard](https://pinqloq.pinqponq.io).
+2. Create a project and copy its secret key.
+3. Create two collections. Suggested names are `pinqloq_go_test_http` and `pinqloq_go_test_manual`.
+4. View delivered logs in the [Pinqloq log panel](https://pinqloq-panel.pinqponq.io).
+
+Never place the secret key in frontend code, a mobile application, source control, or any file served to users.
+
+## Install and import pinqloq
+
+The `pinqloq` module is not yet tagged with a release version, but Go modules can still resolve it directly from its source repository as a pseudo-versioned dependency — no vendoring or submodule needed:
+
+```bash
+go get github.com/pinqponq/pinqloq-backend/sdk/pinqloq-go@<commit-sha-on-main>
+```
+
+`go.sum` already records the verified hash for the pinned commit, so a normal `go build`/`go test`/`go run` (including a fresh clone) needs nothing special. Only bumping the pinned commit requires a couple of env vars, because the module isn't indexed by the public checksum database yet:
+
+```bash
+export GOPRIVATE=github.com/pinqponq/*
+export GOSUMDB=off
+go get github.com/pinqponq/pinqloq-backend/sdk/pinqloq-go@<new-commit-sha>
+```
+
+Once the SDK is tagged, any Go backend will be able to `go get` it directly without these flags.
+
+## Configure
+
+Copy `.env.example` to `.env` and fill in your secret key and collection names:
+
+```bash
+cp .env.example .env
+```
+
+```env
+PINQLOQ_SECRET_KEY=your-project-secret-key
+PINQLOQ_HTTP_COLLECTION=pinqloq_go_test_http
+PINQLOQ_MANUAL_COLLECTION=pinqloq_go_test_manual
+PORT=3300
+```
+
+The `.env` file is ignored by Git and must never be committed. Without it, the app still runs — the pinqloq middleware and manual/redaction routes are simply disabled (`/api/config` reports `configured: false`).
 
 ## Run
 
@@ -14,7 +64,11 @@ go run .
 
 Open [http://127.0.0.1:3300](http://127.0.0.1:3300).
 
-The test lab page lets you trigger HTTP scenarios returning 200, 400, 401, 404, or 500 and inspect the raw response. Set the `PORT` environment variable to use a different port.
+The browser UI provides:
+
+1. HTTP scenarios returning 200, 400, 401, 404, or 500 — captured automatically by the pinqloq `net/http` middleware.
+2. Manual events at Debug, Information, Warning, Error, and Fatal levels via `Logger().Enqueue`.
+3. Redaction tests — one endpoint redacts only the `taxNumber` field (`password` is redacted unconditionally by the SDK's built-in floor), the other redacts everything on the endpoint.
 
 ## Test
 
@@ -22,9 +76,7 @@ The test lab page lets you trigger HTTP scenarios returning 200, 400, 401, 404, 
 go test ./...
 ```
 
-## Status
-
-This scaffold has HTTP scenario endpoints and a browser test lab only. `pinqloq` SDK integration — automatic `net/http` middleware logging, manual events, redaction — is a follow-up step.
+Automated tests never send data to the live service: `PINQLOQ_SECRET_KEY` is left unset while testing, which disables the middleware and the manual/redaction routes (asserted to return `503`) without touching the network.
 
 ## Project standards
 
