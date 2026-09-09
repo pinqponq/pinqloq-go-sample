@@ -23,21 +23,13 @@ Never place the secret key in frontend code, a mobile application, source contro
 
 ## Install and import pinqloq
 
-The `pinqloq` module is not yet tagged with a release version, but Go modules can still resolve it directly from its source repository as a pseudo-versioned dependency — no vendoring or submodule needed:
+The `pinqloq` Go SDK is published as a tagged module: [pkg.go.dev/github.com/pinqponq/pinqloq-go-sdk](https://pkg.go.dev/github.com/pinqponq/pinqloq-go-sdk).
+A plain `go build`/`go test`/`go run` (including a fresh clone) already resolves it — no vendoring,
+submodule, or special environment variables needed. Any other Go backend can install it the same way:
 
 ```bash
-go get github.com/pinqponq/pinqloq-backend/sdk/pinqloq-go@<commit-sha-on-main>
+go get github.com/pinqponq/pinqloq-go-sdk@v1.0.0
 ```
-
-`go.sum` already records the verified hash for the pinned commit, so a normal `go build`/`go test`/`go run` (including a fresh clone) needs nothing special. Only bumping the pinned commit requires a couple of env vars, because the module isn't indexed by the public checksum database yet:
-
-```bash
-export GOPRIVATE=github.com/pinqponq/*
-export GOSUMDB=off
-go get github.com/pinqponq/pinqloq-backend/sdk/pinqloq-go@<new-commit-sha>
-```
-
-Once the SDK is tagged, any Go backend will be able to `go get` it directly without these flags.
 
 ## Configure
 

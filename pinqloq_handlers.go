@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"sort"
 
-	pinqloq "github.com/pinqponq/pinqloq-backend/sdk/pinqloq-go"
+	pinqloq "github.com/pinqponq/pinqloq-go-sdk"
 )
 
 const deviceIdentifier = "go-sample"

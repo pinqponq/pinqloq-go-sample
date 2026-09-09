@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	pinqloq "github.com/pinqponq/pinqloq-backend/sdk/pinqloq-go"
+	pinqloq "github.com/pinqponq/pinqloq-go-sdk"
 )
 
 var scenarioMessages = map[int]string{

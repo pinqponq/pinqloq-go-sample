@@ -1,2 +1,2 @@
-github.com/pinqponq/pinqloq-backend/sdk/pinqloq-go v0.0.0-20260908191943-b3688cc0c3bd h1:wN3ed6hnRbgvTTp/lhLGEEojNEylk/cSPSH9WViv2uA=
-github.com/pinqponq/pinqloq-backend/sdk/pinqloq-go v0.0.0-20260908191943-b3688cc0c3bd/go.mod h1:MU8Jr2S0acc3yDl/re+EYynMptEsyIpBjhGFbVxyV5A=
+github.com/pinqponq/pinqloq-go-sdk v1.0.0 h1:Nuwo8s6wZwZMv2KSeu6POntU17bhB2JHmms6FBTqd4M=
+github.com/pinqponq/pinqloq-go-sdk v1.0.0/go.mod h1:4wrPWoICxy+/YfqkH7wwprFI7QtVgr6kXpy56HUZ/D4=
