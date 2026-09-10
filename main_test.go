@@ -63,7 +63,7 @@ func TestServesTestLabPage(t *testing.T) {
 	}
 }
 
-func TestConfigReportsWhetherPinqloqIsConfigured(t *testing.T) {
+func TestConfigDoesNotLeakSecretKey(t *testing.T) {
 	mux := newMux("public")
 
 	req := httptest.NewRequest(http.MethodGet, "/api/config", nil)
@@ -82,11 +82,15 @@ func TestConfigReportsWhetherPinqloqIsConfigured(t *testing.T) {
 	if _, ok := body["configured"]; !ok {
 		t.Fatalf("expected a 'configured' field in the response")
 	}
+	if _, ok := body["secretKey"]; ok {
+		t.Fatalf("response must never include a secretKey field")
+	}
 }
 
-func TestManualEventRejectedWhenPinqloqNotConfigured(t *testing.T) {
-	if pinqloqClient != nil {
-		t.Skip("pinqloq is configured in this environment")
+func TestManualEventRejectedBeforeSessionConfigured(t *testing.T) {
+	client, _, _, _ := currentSession.read()
+	if client != nil {
+		t.Skip("a session is configured in this environment")
 	}
 
 	mux := newMux("public")
@@ -97,5 +101,29 @@ func TestManualEventRejectedWhenPinqloqNotConfigured(t *testing.T) {
 
 	if rec.Code != http.StatusServiceUnavailable {
 		t.Fatalf("expected 503, got %d", rec.Code)
+	}
+}
+
+func TestSessionRejectsInvalidInput(t *testing.T) {
+	mux := newMux("public")
+
+	cases := []struct {
+		name string
+		body string
+	}{
+		{"missing fields", `{"secretKey":"","httpCollection":"a","manualCollection":"b"}`},
+		{"identical collections", `{"secretKey":"lgl_x","httpCollection":"same","manualCollection":"same"}`},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodPost, "/api/session", strings.NewReader(tc.body))
+			rec := httptest.NewRecorder()
+			mux.ServeHTTP(rec, req)
+
+			if rec.Code != http.StatusBadRequest {
+				t.Fatalf("expected 400, got %d", rec.Code)
+			}
+		})
 	}
 }

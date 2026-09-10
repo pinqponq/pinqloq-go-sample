@@ -328,6 +328,52 @@ a:focus-visible {
   border-color: #c9e9ef;
 }
 
+.setup-card {
+  border-color: #aedde6;
+}
+
+.setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setup-form label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .4px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.setup-form input {
+  font: inherit;
+  font-size: 12px;
+  min-height: 38px;
+  border: 1px solid #cfe9ee;
+  border-radius: 8px;
+  background: white;
+  color: #16333a;
+  padding: 9px 12px;
+}
+
+.setup-form input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.setup-form button {
+  margin-top: 12px;
+}
+
+.setup-error {
+  margin: 12px 0 0;
+  font-size: 11px;
+  color: var(--accent-dark);
+  line-height: 1.6;
+}
+
 .manual-row,
 .redaction-buttons {
   display: flex;

@@ -6,6 +6,8 @@ const configState = document.getElementById("config-state");
 const httpCollection = document.getElementById("http-collection");
 const manualCollection = document.getElementById("manual-collection");
 const historyList = document.getElementById("history");
+const setupForm = document.getElementById("setup-form");
+const setupError = document.getElementById("setup-error");
 
 const history = [];
 const MAX_HISTORY = 6;
@@ -45,13 +47,51 @@ async function loadConfig() {
   const response = await fetch("/api/config");
   const config = await response.json();
 
-  connection.textContent = config.configured ? "Connected" : "Not configured";
+  connection.textContent = config.configured ? "Connected" : "Not connected";
   connection.classList.toggle("connection-off", !config.configured);
   configDot.classList.toggle("dot-off", !config.configured);
-  configState.textContent = config.configured ? "Configured on the server" : "Set PINQLOQ_SECRET_KEY to enable delivery";
+  configState.textContent = config.configured
+    ? "Connected — held in server memory for this run only"
+    : "Not connected — enter your secret key in the Connect card";
   httpCollection.textContent = config.httpCollection || "—";
   manualCollection.textContent = config.manualCollection || "—";
 }
+
+setupForm.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const submitButton = setupForm.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  setupError.hidden = true;
+
+  try {
+    const response = await fetch("/api/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secretKey: document.getElementById("secret-key").value,
+        httpCollection: document.getElementById("http-collection-input").value,
+        manualCollection: document.getElementById("manual-collection-input").value
+      })
+    });
+
+    const body = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setupError.textContent = body.error || `Request failed (${response.status})`;
+      setupError.hidden = false;
+      return;
+    }
+
+    document.getElementById("secret-key").value = "";
+    await loadConfig();
+  } catch (error) {
+    setupError.textContent = String(error);
+    setupError.hidden = false;
+  } finally {
+    submitButton.disabled = false;
+  }
+});
 
 async function report(label, promise, trigger) {
   if (trigger) trigger.disabled = true;

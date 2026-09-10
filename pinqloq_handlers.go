@@ -5,11 +5,10 @@ import (
 	"io"
 	"net/http"
 	"sort"
+	"strings"
 
 	pinqloq "github.com/pinqponq/pinqloq-go-sdk"
 )
-
-const deviceIdentifier = "go-sample"
 
 var logLevelsByName = map[string]pinqloq.LogLevel{
 	"debug":       pinqloq.LogLevelDebug,
@@ -20,15 +19,55 @@ var logLevelsByName = map[string]pinqloq.LogLevel{
 }
 
 func handleConfig(w http.ResponseWriter, r *http.Request) {
+	client, httpCollection, manualCollection, _ := currentSession.read()
+
 	writeJSON(w, http.StatusOK, map[string]any{
-		"configured":       pinqloqClient != nil,
-		"httpCollection":   httpCollectionName,
-		"manualCollection": manualCollectionName,
+		"configured":       client != nil,
+		"httpCollection":   httpCollection,
+		"manualCollection": manualCollection,
+	})
+}
+
+func handleSession(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		SecretKey        string `json:"secretKey"`
+		HTTPCollection   string `json:"httpCollection"`
+		ManualCollection string `json:"manualCollection"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid JSON"})
+		return
+	}
+
+	secretKey := strings.TrimSpace(body.SecretKey)
+	httpCollection := strings.TrimSpace(body.HTTPCollection)
+	manualCollection := strings.TrimSpace(body.ManualCollection)
+
+	if secretKey == "" || httpCollection == "" || manualCollection == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "secretKey, httpCollection and manualCollection are all required"})
+		return
+	}
+
+	if httpCollection == manualCollection {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "httpCollection and manualCollection must be different"})
+		return
+	}
+
+	if err := currentSession.configure(secretKey, httpCollection, manualCollection); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"configured":       true,
+		"httpCollection":   httpCollection,
+		"manualCollection": manualCollection,
 	})
 }
 
 func handleManualEvent(w http.ResponseWriter, r *http.Request) {
-	if pinqloqClient == nil {
+	client, _, manualCollection, _ := currentSession.read()
+	if client == nil {
 		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "pinqloq not configured"})
 		return
 	}
@@ -40,12 +79,12 @@ func handleManualEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := pinqloqClient.Logger().Enqueue(pinqloq.LogEntry{
+	_, err := client.Logger().Enqueue(pinqloq.LogEntry{
 		Event:            "go_sample.manual_event",
 		DeviceIdentifier: deviceIdentifier,
 		LogLevel:         level,
 		LogSourceType:    pinqloq.LogSourceTypeBackend,
-		CollectionName:   manualCollectionName,
+		CollectionName:   manualCollection,
 		Metadata:         map[string]string{"triggeredFrom": "test-lab"},
 		Detail:           map[string]string{"note": "Synthetic manual event from the Go sample test lab."},
 	}, nil, nil)
@@ -58,7 +97,8 @@ func handleManualEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRedactionCapture(w http.ResponseWriter, r *http.Request) {
-	if pinqloqClient == nil {
+	client, _, _, _ := currentSession.read()
+	if client == nil {
 		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "pinqloq not configured"})
 		return
 	}

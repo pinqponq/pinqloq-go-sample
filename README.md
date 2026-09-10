@@ -2,7 +2,9 @@
 
 A plain `net/http` sample application demonstrating how to integrate the `pinqloq` Go SDK into a backend service.
 
-It includes a browser-based test lab for automatic HTTP logging, manual structured events, and redaction. The application generates synthetic data only. Your Pinqloq secret key stays on the server and is never exposed to browser code.
+It includes a browser-based test lab for automatic HTTP logging, manual structured events, and redaction. The application generates synthetic data only.
+
+Your Pinqloq secret key and collection names are entered at runtime in the **Connect** card on the page, sent once to the local server, and held in its process memory for that run only — never written to disk, an `.env` file, or source control. Restart the server and you enter them again.
 
 ## Requirements
 
@@ -31,33 +33,19 @@ submodule, or special environment variables needed. Any other Go backend can ins
 go get github.com/pinqponq/pinqloq-go-sdk@v1.0.0
 ```
 
-## Configure
-
-Copy `.env.example` to `.env` and fill in your secret key and collection names:
-
-```bash
-cp .env.example .env
-```
-
-```env
-PINQLOQ_SECRET_KEY=your-project-secret-key
-PINQLOQ_HTTP_COLLECTION=pinqloq_go_test_http
-PINQLOQ_MANUAL_COLLECTION=pinqloq_go_test_manual
-PORT=3300
-```
-
-The `.env` file is ignored by Git and must never be committed. Without it, the app still runs — the pinqloq middleware and manual/redaction routes are simply disabled (`/api/config` reports `configured: false`).
-
 ## Run
 
 ```bash
 go run .
 ```
 
-Open [http://127.0.0.1:3300](http://127.0.0.1:3300).
+Open [http://127.0.0.1:3300](http://127.0.0.1:3300). Set the `PORT` environment variable to use a different port.
+
+The app starts unconnected — the pinqloq middleware and the manual/redaction routes stay disabled (`/api/config` reports `configured: false`) until you fill in the **Connect** card in the browser.
 
 The browser UI provides:
 
+0. A **Connect** card — enter your secret key and the two collection names to arm the SDK for this run.
 1. HTTP scenarios returning 200, 400, 401, 404, or 500 — captured automatically by the pinqloq `net/http` middleware.
 2. Manual events at Debug, Information, Warning, Error, and Fatal levels via `Logger().Enqueue`.
 3. Redaction tests — one endpoint redacts only the `taxNumber` field (`password` is redacted unconditionally by the SDK's built-in floor), the other redacts everything on the endpoint.
@@ -68,7 +56,7 @@ The browser UI provides:
 go test ./...
 ```
 
-Automated tests never send data to the live service: `PINQLOQ_SECRET_KEY` is left unset while testing, which disables the middleware and the manual/redaction routes (asserted to return `503`) without touching the network.
+Automated tests never send data to the live service: no session is configured while testing, which disables the middleware and the manual/redaction routes (asserted to return `503`) without touching the network. The tests also assert `/api/config` never echoes a secret key back.
 
 ## Project standards
 

@@ -61,6 +61,22 @@
           <span>Synthetic data only</span>
         </div>
 
+        <article class="card setup-card">
+          <div class="card-number">00</div>
+          <h3>Connect</h3>
+          <p>Your secret key and collection names are entered here, kept in server memory for this run only, and never written to disk or source. Restart the server and you re-enter them.</p>
+          <form id="setup-form" class="setup-form" autocomplete="off">
+            <label for="secret-key">Secret key</label>
+            <input type="password" id="secret-key" name="secretKey" placeholder="lgl_…" required />
+            <label for="http-collection-input">HTTP collection</label>
+            <input type="text" id="http-collection-input" name="httpCollection" placeholder="pinqloq_go_test_http" required />
+            <label for="manual-collection-input">Manual collection</label>
+            <input type="text" id="manual-collection-input" name="manualCollection" placeholder="pinqloq_go_test_manual" required />
+            <button type="submit" class="primary">Connect <span>↗</span></button>
+          </form>
+          <p class="setup-error" id="setup-error" role="alert" hidden></p>
+        </article>
+
         <article class="card">
           <div class="card-number">01</div>
           <h3>HTTP request</h3>
