@@ -10,45 +10,45 @@ Your Pinqloq secret key and collection names are entered at runtime in the **Con
 
 - Go 1.22 or later
 - A Pinqloq account
-- A Pinqloq project and secret key
-- One collection for automatic HTTP logs
-- One collection for manual events
 
-## Dashboard setup
+## Getting started
 
-1. Sign in to the [Pinqloq dashboard](https://pinqloq.pinqponq.io).
-2. Create a project and copy its secret key.
-3. Create two collections. Suggested names are `pinqloq_go_test_http` and `pinqloq_go_test_manual`.
-4. View delivered logs in the [Pinqloq log panel](https://pinqloq-panel.pinqponq.io).
+1. **Clone and build.**
+   ```bash
+   git clone https://github.com/pinqponq/pinqloq-go-sample.git
+   cd pinqloq-go-sample
+   go build ./...
+   ```
+2. **Create a Pinqloq project.** Sign in to the [Pinqloq dashboard](https://pinqloq.pinqponq.io), create a project, and copy its secret key.
+3. **Create two collections** in that project. Suggested names: `pinqloq_go_test_http` and `pinqloq_go_test_manual`.
+4. **Start the sample.**
+   ```bash
+   go run .
+   ```
+   Set the `PORT` environment variable first if you need a port other than 3300.
+5. **Open the test lab** at [http://127.0.0.1:3300](http://127.0.0.1:3300). It starts unconnected — no config files, nothing pre-filled.
+6. **Fill in the Connect card** at the top of the page with the secret key and the two collection names, then click **Connect**. This posts once to the local server and is held in its process memory for this run only — never written to disk, an `.env` file, or source control. Restart the server and you enter them again.
+7. **Trigger a scenario** — an HTTP status button, a manual event, or a redaction test — and watch the last-response panel update.
+8. **Check the panel.** Open the [Pinqloq log panel](https://pinqloq-panel.pinqponq.io) (the first time, open **Team Members** in the dashboard, edit your admin/owner account, and set a panel password of at least eight characters) and pick your collection.
 
 Never place the secret key in frontend code, a mobile application, source control, or any file served to users.
+
+## What the test lab covers
+
+1. HTTP scenarios returning 200, 400, 401, 404, or 500 — captured automatically by the pinqloq `net/http` middleware.
+2. Manual events at Debug, Information, Warning, Error, and Fatal levels via `client.Logger().Enqueue`.
+3. Redaction tests — one endpoint redacts only the `taxNumber` field (`password` is redacted unconditionally by the SDK's built-in floor), the other redacts everything on the endpoint.
 
 ## Install and import pinqloq
 
 The `pinqloq` Go SDK is published as a tagged module: [pkg.go.dev/github.com/pinqponq/pinqloq-go-sdk](https://pkg.go.dev/github.com/pinqponq/pinqloq-go-sdk).
-A plain `go build`/`go test`/`go run` (including a fresh clone) already resolves it — no vendoring,
-submodule, or special environment variables needed. Any other Go backend can install it the same way:
+A plain `go build`/`go test`/`go run` (as in [Getting started](#getting-started)) already resolves
+it — no vendoring, submodule, or special environment variables needed. Any other Go backend can
+install it the same way:
 
 ```bash
 go get github.com/pinqponq/pinqloq-go-sdk@v1.0.0
 ```
-
-## Run
-
-```bash
-go run .
-```
-
-Open [http://127.0.0.1:3300](http://127.0.0.1:3300). Set the `PORT` environment variable to use a different port.
-
-The app starts unconnected — the pinqloq middleware and the manual/redaction routes stay disabled (`/api/config` reports `configured: false`) until you fill in the **Connect** card in the browser.
-
-The browser UI provides:
-
-0. A **Connect** card — enter your secret key and the two collection names to arm the SDK for this run.
-1. HTTP scenarios returning 200, 400, 401, 404, or 500 — captured automatically by the pinqloq `net/http` middleware.
-2. Manual events at Debug, Information, Warning, Error, and Fatal levels via `Logger().Enqueue`.
-3. Redaction tests — one endpoint redacts only the `taxNumber` field (`password` is redacted unconditionally by the SDK's built-in floor), the other redacts everything on the endpoint.
 
 ## Test
 
