@@ -36,7 +36,7 @@ Never place the secret key in frontend code, a mobile application, source contro
 ## What the test lab covers
 
 1. HTTP scenarios returning 200, 400, 401, 404, or 500 — captured automatically by the pinqloq `net/http` middleware.
-2. Manual events at Debug, Information, Warning, Error, and Fatal levels via `client.Logger().Enqueue`.
+2. Manual events at Debug, Information, Warning, Error, and Fatal levels via `client.Enqueue`.
 3. Redaction tests — one endpoint redacts only the `taxNumber` field (`password` is redacted unconditionally by the SDK's built-in floor), the other redacts everything on the endpoint.
 
 ## Install and import pinqloq
