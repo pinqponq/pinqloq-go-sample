@@ -79,7 +79,7 @@ func handleManualEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := client.Logger().Enqueue(pinqloq.LogEntry{
+	_, err := client.Enqueue(pinqloq.LogEntry{
 		Event:            "go_sample.manual_event",
 		DeviceIdentifier: deviceIdentifier,
 		LogLevel:         level,
