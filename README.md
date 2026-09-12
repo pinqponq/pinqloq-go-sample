@@ -41,13 +41,13 @@ Never place the secret key in frontend code, a mobile application, source contro
 
 ## Install and import pinqloq
 
-The `pinqloq` Go SDK is published as a tagged module: [pkg.go.dev/github.com/pinqponq/pinqloq-go-sdk](https://pkg.go.dev/github.com/pinqponq/pinqloq-go-sdk).
+The `pinqloq` Go SDK is published as a tagged module: [pkg.go.dev/github.com/pinqponq/pinqloq-go-sdk/v2](https://pkg.go.dev/github.com/pinqponq/pinqloq-go-sdk/v2).
 A plain `go build`/`go test`/`go run` (as in [Getting started](#getting-started)) already resolves
 it — no vendoring, submodule, or special environment variables needed. Any other Go backend can
 install it the same way:
 
 ```bash
-go get github.com/pinqponq/pinqloq-go-sdk@v1.0.0
+go get github.com/pinqponq/pinqloq-go-sdk/v2@v2.0.0
 ```
 
 ## Test

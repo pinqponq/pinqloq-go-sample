@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	pinqloq "github.com/pinqponq/pinqloq-go-sdk"
+	pinqloq "github.com/pinqponq/pinqloq-go-sdk/v2"
 )
 
 var logLevelsByName = map[string]pinqloq.LogLevel{
