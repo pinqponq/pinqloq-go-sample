@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	pinqloq "github.com/pinqponq/pinqloq-go-sdk"
+	pinqloq "github.com/pinqponq/pinqloq-go-sdk/v2"
 )
 
 const deviceIdentifier = "go-sample"
@@ -31,7 +31,7 @@ func (s *session) configure(secretKey, httpCollection, manualCollection string) 
 		return err
 	}
 
-	mw := client.Middleware(pinqloq.RequestLoggingOptions{
+	mw := client.RequestLogging(pinqloq.RequestLoggingOptions{
 		ExcludePaths: []string{"/style.css", "/app.js", "/api/config", "/api/session"},
 		RedactFields: []string{"taxNumber"},
 		RedactPaths:  []string{"/demo/redaction/endpoint"},
