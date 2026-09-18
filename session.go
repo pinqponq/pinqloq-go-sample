@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -21,20 +22,28 @@ type session struct {
 
 var currentSession = &session{}
 
+func resolveDeviceIdentifier(r *http.Request) string {
+	if header := strings.TrimSpace(r.Header.Get("Device-Identifier")); header != "" {
+		return header
+	}
+
+	return deviceIdentifier
+}
+
 func (s *session) configure(secretKey, httpCollection, manualCollection string) error {
 	client, err := pinqloq.New(pinqloq.Options{
 		SecretKey:             secretKey,
 		APILogsCollectionName: httpCollection,
-		DeviceIdentifier:      deviceIdentifier,
 	})
 	if err != nil {
 		return err
 	}
 
 	mw := client.RequestLogging(pinqloq.RequestLoggingOptions{
-		ExcludePaths: []string{"/style.css", "/app.js", "/api/config", "/api/session"},
-		RedactFields: []string{"taxNumber"},
-		RedactPaths:  []string{"/demo/redaction/endpoint"},
+		ExcludePaths:            []string{"/style.css", "/app.js", "/api/config", "/api/session"},
+		ResolveDeviceIdentifier: resolveDeviceIdentifier,
+		RedactFields:            []string{"taxNumber"},
+		RedactPaths:             []string{"/demo/redaction/endpoint"},
 	})
 
 	s.mu.Lock()
