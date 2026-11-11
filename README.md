@@ -60,11 +60,11 @@ Automated tests never send data to the live service: no session is configured wh
 
 ## Project standards
 
-Shared conventions are vendored from [pinq-doq](https://github.com/pinqponq/pinqdoq) under `.pinq-doq/` and copied into `.claude/rules/`. See [CLAUDE.md](CLAUDE.md).
+The rules and skills come from pinq-doq: the `.pinq-doq/` submodule, copied into `.claude/rules/` and `.claude/skills/` (see "pinq-doq submodule" below). See [CLAUDE.md](CLAUDE.md).
 
 ## pinq-doq submodule
 
-`.pinq-doq/` is a Git submodule that points to `pinqponq/pinqdoq`, a private repository. Clone this repository without `--recurse-submodules`. Without access to `pinqponq/pinqdoq`, `git submodule update` fails for `.pinq-doq/`, and you can skip it: the rules and skills from it are already committed under `.claude/rules/` and `.claude/skills/`, so the project builds and runs without the submodule.
+`.pinq-doq/` is a Git submodule that points to `pinqponq/pinqdoq`, a private repository. Clone this repository without `--recurse-submodules`. Without access to `pinqponq/pinqdoq`, `git submodule update` fails for `.pinq-doq/`; skip that command. The Claude Code rules and skills from the submodule are already committed under `.claude/rules/` and `.claude/skills/`. The project builds and runs without the submodule. Only the deeper references (`.pinq-doq/references/`) and the code generation scripts (`.pinq-doq/scripts/`) stay in the submodule.
 
 ## License
 
