@@ -62,6 +62,10 @@ Automated tests never send data to the live service: no session is configured wh
 
 Shared conventions are vendored from [pinq-doq](https://github.com/pinqponq/pinqdoq) under `.pinq-doq/` and copied into `.claude/rules/`. See [CLAUDE.md](CLAUDE.md).
 
+## pinq-doq submodule
+
+`.pinq-doq/` is a Git submodule that points to `pinqponq/pinqdoq`, a private repository. Clone this repository without `--recurse-submodules`. Without access to `pinqponq/pinqdoq`, `git submodule update` fails for `.pinq-doq/`, and you can skip it: the rules and skills from it are already committed under `.claude/rules/` and `.claude/skills/`, so the project builds and runs without the submodule.
+
 ## License
 
 MIT
